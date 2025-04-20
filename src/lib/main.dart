@@ -1,3 +1,5 @@
+import 'package:casui/add_workout.dart';
+import 'package:casui/models/workout.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -85,14 +87,21 @@ class _HomeState extends State<HomePageWidget> {
             //   style: Theme.of(context).textTheme.headlineMedium,
             // ),
             const Text('Aqui vai haver a lista de treinos'),
-            WorkoutElement()
+            WorkoutElement(),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: ()=>{
+                Navigator.push(
+                  context, 
+                  MaterialPageRoute(builder: (context)=> const AddWorkout()
+                  )
+                )
+              },
         tooltip: 'Increment',
-        child: const Icon(Icons.add),
+        label: const Text('New'),
+        icon: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
@@ -109,3 +118,13 @@ class WorkoutElement extends StatelessWidget {
     );
   }
 }
+
+Widget contactWidget(Workout workout) {
+    return Card(
+      child: ListTile(
+        leading: const FlutterLogo(size: 56.0),
+        title: Text(workout.title),
+        subtitle: Text(workout.description),
+      )
+    );
+  }
