@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      darkTheme: ThemeData.dark(),
+      darkTheme: ThemeData.dark(), //https://medium.com/@amazing_gs/complete-flutter-guide-how-to-implement-dark-mode-dynamic-theming-and-theme-switching-ddabaef48d5a
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white12),
         useMaterial3: true,
