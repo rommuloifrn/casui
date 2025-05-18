@@ -1,3 +1,4 @@
+import 'package:casui/models/workout.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -12,7 +13,7 @@ class AddWorkout extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
-        title: const Text("Capybara"),
+        title: const Text("casui"),
       ),
       body: const WorkoutForm(),
     );
@@ -31,6 +32,28 @@ class WorkoutForm extends StatefulWidget {
 class WorkoutFormState extends State<WorkoutForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _circuitsController = TextEditingController();
+
+  void _submitForm() {
+    if (_formKey.currentState!.validate()) {
+      // Se o formulário for válido, podemos acessar os valores dos campos
+      String title = _titleController.text;
+      String description = _descriptionController.text;
+      String circuits = _circuitsController.text;
+
+      var circuit = Workout(
+        title,
+        DateTime.now(),
+        description,
+        4
+      );
+
+      print('titulo: $title, desc: $description, n circuits: $circuits');
+      // Aqui você faria a lógica de envio dos dados, por exemplo, para uma API.
+      Navigator.pop(context, circuit);
+    }
+  }
 
   @override
   void initState() {
@@ -97,11 +120,7 @@ class WorkoutFormState extends State<WorkoutForm> {
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: ElevatedButton(
               onPressed: () {
-                // Validate will return true if the form is valid, or false if
-                // the form is invalid.
-                if (_formKey.currentState!.validate()) {
-                  // Process data.
-                }
+                _submitForm();
               },
               child: const Text('Submit'),
             ),

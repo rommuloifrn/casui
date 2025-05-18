@@ -45,6 +45,8 @@ class HomePageWidget extends StatefulWidget {
 class _HomeState extends State<HomePageWidget> {
   int _counter = 0;
 
+  final CircuitList _circuitList = CircuitList();
+
   void _incrementCounter() {
     setState(() {
       // This call to setState tells the Flutter framework that something has
@@ -79,32 +81,34 @@ class _HomeState extends State<HomePageWidget> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            // const Text(
-            //   'You have pushed the button this many times:',
-            // ),
-            // Text(
-            //   '$_counter',
-            //   style: Theme.of(context).textTheme.headlineMedium,
-            // ),
-            const Text('Aqui vai haver a lista de treinos'),
+            const Text('My circuits'),
             WorkoutElement(),
+            _circuitList
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: ()=>{
-                Navigator.push(
-                  context, 
-                  MaterialPageRoute(builder: (context)=> const AddWorkout()
-                  )
-                )
-              },
+          _navigateAndDisplayForm(context)        
+        },
         tooltip: 'Increment',
         label: const Text('New'),
         icon: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+}
+
+Future<void> _navigateAndDisplayForm(BuildContext context) async {
+  final ximps = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context)=> const AddWorkout()
+    )
+  );
+
+  if (!context.mounted) return;
+
+  
 }
 
 class WorkoutElement extends StatelessWidget {
@@ -119,7 +123,7 @@ class WorkoutElement extends StatelessWidget {
   }
 }
 
-Widget contactWidget(Workout workout) {
+Widget WorkoutWidget(Workout workout) {
     return Card(
       child: ListTile(
         leading: const FlutterLogo(size: 56.0),
@@ -128,3 +132,36 @@ Widget contactWidget(Workout workout) {
       )
     );
   }
+
+class CircuitList extends StatefulWidget {
+
+  CircuitList();
+
+  @override
+  _CircuitListState createState() => _CircuitListState();
+
+}
+
+class _CircuitListState extends State<CircuitList> {
+  List<Workout> list = [
+    Workout('Arms n´back inhouse', DateTime(2004), 'Braços, sem muito equipamento.', 3),
+    Workout('Park arms', DateTime(2004), 'Braços, em um parque.', 3),
+    Workout('Ultimate Leg Crusher', DateTime(2004), 'Um treino desenhado ao redor do pistol squat', 3)
+  ];
+
+  void pushWorkout(Workout workout) {
+    list.add(workout);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    List<Widget> workouts = [];
+    for (final w in list) {
+      workouts.add(WorkoutWidget(w));
+    }
+      
+    return Column(
+      children: workouts,
+    );
+  }
+}
