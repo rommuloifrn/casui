@@ -43,19 +43,24 @@ class HomePageWidget extends StatefulWidget {
 }
 
 class _HomeState extends State<HomePageWidget> {
-  int _counter = 0;
 
-  final CircuitList _circuitList = CircuitList();
+  final List<Workout> _workoutList = [
+    //Workout('Arms n´back inhouse', DateTime(2004), 'Braços, sem muito equipamento.', 3),
+    //Workout('Park arms', DateTime(2004), 'Braços, em um parque.', 3),
+    //Workout('Ultimate Leg Crusher', DateTime(2004), 'Um treino desenhado ao redor do pistol squat', 3)
+  ];
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  Future<void> _navigateAndDisplayForm(BuildContext context) async {
+    final result = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context)=> const AddWorkout()
+      )
+    );
+
+    if (!context.mounted) return;
+
+    setState(() {_workoutList.add(result);});
+    print(result);
   }
 
   @override
@@ -83,11 +88,12 @@ class _HomeState extends State<HomePageWidget> {
           children: <Widget>[
             const Text('My circuits'),
             WorkoutElement(),
-            _circuitList
+            makeList(_workoutList)
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
+        key: const Key('opa amorrr'),
         onPressed: ()=>{
           _navigateAndDisplayForm(context)        
         },
@@ -97,26 +103,27 @@ class _HomeState extends State<HomePageWidget> {
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+
+  Column makeList(List<Workout> list) {
+    List<Widget> wl = [];
+    for (final w in list) {
+      wl.add(WorkoutWidget(w));
+    }
+
+    return Column(
+      children: wl,
+    );
+  }
 }
 
-Future<void> _navigateAndDisplayForm(BuildContext context) async {
-  final ximps = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context)=> const AddWorkout()
-    )
-  );
 
-  if (!context.mounted) return;
-
-  
-}
 
 class WorkoutElement extends StatelessWidget {
-  @override
+
   Widget build(BuildContext context) {
     return FloatingActionButton.extended(
       onPressed: ()=>{}, 
-      key: const Key('Ayyy amorr'), 
+      key: const Key('Ayyy amo'), 
       label: const Text('Eu sou um treino'),
       backgroundColor: Colors.teal[600],
     );
@@ -132,36 +139,3 @@ Widget WorkoutWidget(Workout workout) {
       )
     );
   }
-
-class CircuitList extends StatefulWidget {
-
-  CircuitList();
-
-  @override
-  _CircuitListState createState() => _CircuitListState();
-
-}
-
-class _CircuitListState extends State<CircuitList> {
-  List<Workout> list = [
-    Workout('Arms n´back inhouse', DateTime(2004), 'Braços, sem muito equipamento.', 3),
-    Workout('Park arms', DateTime(2004), 'Braços, em um parque.', 3),
-    Workout('Ultimate Leg Crusher', DateTime(2004), 'Um treino desenhado ao redor do pistol squat', 3)
-  ];
-
-  void pushWorkout(Workout workout) {
-    list.add(workout);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    List<Widget> workouts = [];
-    for (final w in list) {
-      workouts.add(WorkoutWidget(w));
-    }
-      
-    return Column(
-      children: workouts,
-    );
-  }
-}

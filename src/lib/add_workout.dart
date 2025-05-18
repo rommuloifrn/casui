@@ -46,7 +46,7 @@ class WorkoutFormState extends State<WorkoutForm> {
         title,
         DateTime.now(),
         description,
-        4
+        int.parse(circuits)
       );
 
       print('titulo: $title, desc: $description, n circuits: $circuits');
@@ -92,6 +92,7 @@ class WorkoutFormState extends State<WorkoutForm> {
                   },
                 ),
                 TextFormField(
+                  controller: _descriptionController,
                   decoration: const InputDecoration(
                     hintText: 'Description',
                   ),
@@ -103,6 +104,7 @@ class WorkoutFormState extends State<WorkoutForm> {
                   },
                 ),
                 TextFormField(
+                  controller: _circuitsController,
                   decoration: const InputDecoration(
                     hintText: 'Circuit reps',
                   ),
