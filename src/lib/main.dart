@@ -1,4 +1,5 @@
 import 'package:casui/add_workout.dart';
+import 'package:casui/detail_workout.dart';
 import 'package:casui/models/workout.dart';
 import 'package:flutter/material.dart';
 
@@ -45,7 +46,7 @@ class HomePageWidget extends StatefulWidget {
 class _HomeState extends State<HomePageWidget> {
 
   final List<Workout> _workoutList = [
-    //Workout('Arms n´back inhouse', DateTime(2004), 'Braços, sem muito equipamento.', 3),
+    Workout('Arms n´back inhouse', DateTime(2004), 'Braços, sem muito equipamento.', 3),
     //Workout('Park arms', DateTime(2004), 'Braços, em um parque.', 3),
     //Workout('Ultimate Leg Crusher', DateTime(2004), 'Um treino desenhado ao redor do pistol squat', 3)
   ];
@@ -77,21 +78,20 @@ class _HomeState extends State<HomePageWidget> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
+      body: Column(
           // Column has various properties to control how it sizes itself and
           // how it positions its children. Here we use mainAxisAlignment to
           // center the children vertically; the main axis here is the vertical
           // axis because Columns are vertical (the cross axis would be
           // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
+          //mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text('My circuits'),
-            WorkoutElement(),
-            makeList(_workoutList)
+            //WorkoutElement(),
+            makeList(_workoutList, context)
           ],
         ),
-      ),
+      
       floatingActionButton: FloatingActionButton.extended(
         key: const Key('opa amorrr'),
         onPressed: ()=>{
@@ -104,10 +104,10 @@ class _HomeState extends State<HomePageWidget> {
     );
   }
 
-  Column makeList(List<Workout> list) {
+  Column makeList(List<Workout> list, BuildContext context) {
     List<Widget> wl = [];
     for (final w in list) {
-      wl.add(WorkoutWidget(w));
+      wl.add(WorkoutWidget(w, context));
     }
 
     return Column(
@@ -130,12 +130,15 @@ class WorkoutElement extends StatelessWidget {
   }
 }
 
-Widget WorkoutWidget(Workout workout) {
-    return Card(
-      child: ListTile(
-        leading: const FlutterLogo(size: 56.0),
-        title: Text(workout.title),
-        subtitle: Text(workout.description),
-      )
-    );
-  }
+Widget WorkoutWidget(Workout workout, BuildContext context) {
+  return Card(
+    child: ListTile(
+      onTap: () => {
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> DetailWorkout(workout: workout)))
+      },
+      leading: const FlutterLogo(size: 56.0),
+      title: Text(workout.title),
+      subtitle: Text(workout.description),
+    )
+  );
+}
