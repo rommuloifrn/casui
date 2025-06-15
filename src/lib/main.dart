@@ -15,7 +15,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      darkTheme: ThemeData.dark(), //https://medium.com/@amazing_gs/complete-flutter-guide-how-to-implement-dark-mode-dynamic-theming-and-theme-switching-ddabaef48d5a
+      darkTheme: ThemeData
+          .dark(), //https://medium.com/@amazing_gs/complete-flutter-guide-how-to-implement-dark-mode-dynamic-theming-and-theme-switching-ddabaef48d5a
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white12),
         useMaterial3: true,
@@ -44,23 +45,22 @@ class HomePageWidget extends StatefulWidget {
 }
 
 class _HomeState extends State<HomePageWidget> {
-
   final List<Workout> _workoutList = [
-    Workout('Arms n´back inhouse', DateTime(2004), 'Braços, sem muito equipamento.', 3),
+    Workout('Arms n´back inhouse', DateTime(2004),
+        'Braços, sem muito equipamento.', 3),
     //Workout('Park arms', DateTime(2004), 'Braços, em um parque.', 3),
     //Workout('Ultimate Leg Crusher', DateTime(2004), 'Um treino desenhado ao redor do pistol squat', 3)
   ];
 
   Future<void> _navigateAndDisplayForm(BuildContext context) async {
     final result = await Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context)=> const AddWorkout()
-      )
-    );
+        context, MaterialPageRoute(builder: (context) => const AddWorkout()));
 
     if (!context.mounted) return;
 
-    setState(() {_workoutList.add(result);});
+    setState(() {
+      _workoutList.add(result);
+    });
     print(result);
   }
 
@@ -79,24 +79,22 @@ class _HomeState extends State<HomePageWidget> {
         title: Text(widget.title),
       ),
       body: Column(
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('My circuits'),
-            //WorkoutElement(),
-            makeList(_workoutList, context)
-          ],
-        ),
-      
+        // Column has various properties to control how it sizes itself and
+        // how it positions its children. Here we use mainAxisAlignment to
+        // center the children vertically; the main axis here is the vertical
+        // axis because Columns are vertical (the cross axis would be
+        // horizontal).
+        //mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          const Text('My circuits'),
+          //WorkoutElement(),
+          makeList(_workoutList, context)
+        ],
+      ),
+
       floatingActionButton: FloatingActionButton.extended(
         key: const Key('opa amorrr'),
-        onPressed: ()=>{
-          _navigateAndDisplayForm(context)        
-        },
+        onPressed: () => {_navigateAndDisplayForm(context)},
         tooltip: 'Increment',
         label: const Text('New'),
         icon: const Icon(Icons.add),
@@ -116,14 +114,11 @@ class _HomeState extends State<HomePageWidget> {
   }
 }
 
-
-
 class WorkoutElement extends StatelessWidget {
-
   Widget build(BuildContext context) {
     return FloatingActionButton.extended(
-      onPressed: ()=>{}, 
-      key: const Key('Ayyy amo'), 
+      onPressed: () => {},
+      key: const Key('Ayyy amo'),
       label: const Text('Eu sou um treino'),
       backgroundColor: Colors.teal[600],
     );
@@ -132,13 +127,15 @@ class WorkoutElement extends StatelessWidget {
 
 Widget WorkoutWidget(Workout workout, BuildContext context) {
   return Card(
-    child: ListTile(
-      onTap: () => {
-        Navigator.push(context, MaterialPageRoute(builder: (context)=> DetailWorkout(workout: workout)))
-      },
-      leading: const FlutterLogo(size: 56.0),
-      title: Text(workout.title),
-      subtitle: Text(workout.description),
-    )
-  );
+      child: ListTile(
+    onTap: () => {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => DetailWorkout(workout: workout)))
+    },
+    leading: const FlutterLogo(size: 56.0),
+    title: Text(workout.title),
+    subtitle: Text(workout.description),
+  ));
 }

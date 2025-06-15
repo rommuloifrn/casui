@@ -1,5 +1,6 @@
 import 'package:casui/models/workout.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 enum WorkoutOptions { delete, edit, share }
 
@@ -13,27 +14,33 @@ class DetailWorkout extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
-        title: const Text("casui"),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(workout.title),
-          Text("Circuits: ${workout.circuits}"),
-          Text("Created in ${workout.created}"),
-          TextButton(
-            child: Text(
-              "Deletar",
-            ),
-            onPressed: () {},
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                workout.title,
+                style: const TextStyle(fontSize: 22),
+              ),
+              PopupMenuButton<WorkoutOptions>(
+                  itemBuilder: (BuildContext context) =>
+                      <PopupMenuEntry<WorkoutOptions>>[
+                        const PopupMenuItem<WorkoutOptions>(
+                            child: Text("Edit")),
+                        const PopupMenuItem<WorkoutOptions>(
+                            child: Text("Delete")),
+                        const PopupMenuItem<WorkoutOptions>(
+                            child: Text("Share")),
+                      ])
+            ],
           ),
-          PopupMenuButton<WorkoutOptions>(
-              itemBuilder: (BuildContext context) =>
-                  <PopupMenuEntry<WorkoutOptions>>[
-                    const PopupMenuItem<WorkoutOptions>(child: Text("Edit")),
-                    const PopupMenuItem<WorkoutOptions>(child: Text("Delete")),
-                    const PopupMenuItem<WorkoutOptions>(child: Text("Share")),
-                  ])
+          Text("${workout.circuits} circuits"),
+          Text(
+              "Created in ${DateFormat("MMMM, d yyyy").format(workout.created)}"),
+          Text("Last exec: 20/04 (8 days ago)")
         ]),
       ),
       floatingActionButton: FloatingActionButton.extended(
