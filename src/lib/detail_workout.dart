@@ -26,12 +26,30 @@ class DetailWorkout extends StatelessWidget {
                 style: const TextStyle(fontSize: 22),
               ),
               PopupMenuButton<WorkoutOptions>(
+                  onSelected: (WorkoutOptions o) {
+                    switch (o) {
+                      case WorkoutOptions.delete:
+                        print("Delte!");
+                        Navigator.pop(context, "delete ${workout.title}");
+                        break;
+
+                      case WorkoutOptions.share:
+                        print("share!");
+                        break;
+
+                      default:
+                    }
+                  },
                   itemBuilder: (BuildContext context) =>
                       <PopupMenuEntry<WorkoutOptions>>[
                         const PopupMenuItem<WorkoutOptions>(
-                            child: Text("Edit")),
+                          child: Text("Edit"),
+                          value: WorkoutOptions.edit,
+                        ),
                         const PopupMenuItem<WorkoutOptions>(
-                            child: Text("Delete")),
+                          child: Text("Delete"),
+                          value: WorkoutOptions.delete,
+                        ),
                         const PopupMenuItem<WorkoutOptions>(
                             child: Text("Share")),
                       ])
@@ -44,7 +62,9 @@ class DetailWorkout extends StatelessWidget {
         ]),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.pop(context);
+        },
         label: const Text("Start"),
         icon: const Icon(Icons.play_arrow),
       ),

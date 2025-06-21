@@ -48,8 +48,8 @@ class _HomeState extends State<HomePageWidget> {
   final List<Workout> _workoutList = [
     Workout('Arms n´back inhouse', DateTime(2004),
         'Braços, sem muito equipamento.', 3),
-    //Workout('Park arms', DateTime(2004), 'Braços, em um parque.', 3),
-    //Workout('Ultimate Leg Crusher', DateTime(2004), 'Um treino desenhado ao redor do pistol squat', 3)
+    Workout('Park arms', DateTime(2004), 'Braços, em um parque.', 3),
+    Workout('Ultimate Leg Crusher', DateTime(2004), 'Um treino desenhado ao redor do pistol squat', 3)
   ];
 
   Future<void> _navigateAndDisplayForm(BuildContext context) async {
@@ -63,6 +63,14 @@ class _HomeState extends State<HomePageWidget> {
     });
     print(result);
   }
+
+  void _deleteWorkout(String text) {
+    setState(() {
+      _workoutList.removeWhere((w) => w.title.split(" ")[0] == text);
+    });
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +96,7 @@ class _HomeState extends State<HomePageWidget> {
         children: <Widget>[
           const Text('My circuits'),
           //WorkoutElement(),
-          makeList(_workoutList, context)
+          makeList(_workoutList, context, _deleteWorkout)
         ],
       ),
 
@@ -102,10 +110,10 @@ class _HomeState extends State<HomePageWidget> {
     );
   }
 
-  Column makeList(List<Workout> list, BuildContext context) {
+  Column makeList(List<Workout> list, BuildContext context, Function deleteCallback) {
     List<Widget> wl = [];
     for (final w in list) {
-      wl.add(WorkoutWidget(w, context));
+      wl.add(WorkoutWidget(w, context, deleteCallback));
     }
 
     return Column(
@@ -125,14 +133,32 @@ class WorkoutElement extends StatelessWidget {
   }
 }
 
-Widget WorkoutWidget(Workout workout, BuildContext context) {
+Widget WorkoutWidget(Workout workout, BuildContext context, Function deleteCallback) {
+  Future<void> _navigateAndManage(BuildContext context, Workout workout) async {
+    final shit = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => DetailWorkout(workout: workout)));
+
+    if (!context.mounted) return;
+  }
+
   return Card(
       child: ListTile(
-    onTap: () => {
-      Navigator.push(
+    onTap: () async {
+      final shit = await Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => DetailWorkout(workout: workout)))
+              builder: (context) => DetailWorkout(workout: workout)));
+      //print(shit);
+      print("fuck");
+      String output = shit.toString();
+      var splitt = output.split(" ");
+      if (splitt[0] == "delete") {
+        print("deu delete!");
+
+        deleteCallback(splitt[1]);
+      }
     },
     leading: const FlutterLogo(size: 56.0),
     title: Text(workout.title),
