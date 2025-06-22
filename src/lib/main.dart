@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white12),
         useMaterial3: true,
       ),
-      home: const HomePageWidget(title: 'casui'),
+      home: const HomePageWidget(title: ''),
     );
   }
 }
@@ -104,18 +104,25 @@ class _HomeState extends State<HomePageWidget> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: Column(
-        // Column has various properties to control how it sizes itself and
-        // how it positions its children. Here we use mainAxisAlignment to
-        // center the children vertically; the main axis here is the vertical
-        // axis because Columns are vertical (the cross axis would be
-        // horizontal).
-        //mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          const Text('My circuits'),
-          //WorkoutElement(),
-          makeList(_workoutList, context, _deleteWorkout)
-        ],
+      body: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          // Column has various properties to control how it sizes itself and
+          // how it positions its children. Here we use mainAxisAlignment to
+          // center the children vertically; the main axis here is the vertical
+          // axis because Columns are vertical (the cross axis would be
+          // horizontal).
+          //mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            const Text(
+              'My circuits',
+              style: TextStyle(fontSize: 20),
+            ),
+            //WorkoutElement(),
+            makeList(_workoutList, context, _deleteWorkout)
+          ],
+        ),
       ),
 
       floatingActionButton: FloatingActionButton.extended(
@@ -164,25 +171,26 @@ Widget WorkoutWidget(
   }
 
   return Card(
+      margin: const EdgeInsets.symmetric(vertical: 4),
       child: ListTile(
-    onTap: () async {
-      final selectedAction = await Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => DetailWorkout(workout: workout)));
+        onTap: () async {
+          final selectedAction = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => DetailWorkout(workout: workout)));
 
-      String output = selectedAction.toString();
+          String output = selectedAction.toString();
 
-      List<String> outputSplitted = output.split(" ");
-      String action = outputSplitted[0];
-      int workoutId = int.parse(outputSplitted[1]);
+          List<String> outputSplitted = output.split(" ");
+          String action = outputSplitted[0];
+          int workoutId = int.parse(outputSplitted[1]);
 
-      if (action == "delete") {
-        deleteCallback(workoutId);
-      }
-    },
-    leading: const FlutterLogo(size: 56.0),
-    title: Text(workout.title),
-    subtitle: Text(workout.description),
-  ));
+          if (action == "delete") {
+            deleteCallback(workoutId);
+          }
+        },
+        leading: const FlutterLogo(size: 56.0),
+        title: Text(workout.title),
+        subtitle: Text(workout.description),
+      ));
 }
