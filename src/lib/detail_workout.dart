@@ -30,7 +30,7 @@ class DetailWorkout extends StatelessWidget {
                     switch (o) {
                       case WorkoutOptions.delete:
                         print("Delte!");
-                        Navigator.pop(context, "delete ${workout.title}");
+                        Navigator.pop(context, "delete ${workout.id}");
                         break;
 
                       case WorkoutOptions.share:

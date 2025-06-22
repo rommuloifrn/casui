@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:casui/add_workout.dart';
 import 'package:casui/detail_workout.dart';
 import 'package:casui/models/workout.dart';
@@ -46,10 +48,12 @@ class HomePageWidget extends StatefulWidget {
 
 class _HomeState extends State<HomePageWidget> {
   final List<Workout> _workoutList = [
-    Workout('Arms n´back inhouse', DateTime(2004),
+    Workout.withId(123123, 'Arms n´back inhouse', DateTime(2004),
         'Braços, sem muito equipamento.', 3),
-    Workout('Park arms', DateTime(2004), 'Braços, em um parque.', 3),
-    Workout('Ultimate Leg Crusher', DateTime(2004), 'Um treino desenhado ao redor do pistol squat', 3)
+    Workout.withId(
+        121212, 'Park arms', DateTime(2004), 'Braços, em um parque.', 3),
+    Workout.withId(232323, 'Ultimate Leg Crusher', DateTime(2004),
+        'Um treino desenhado ao redor do pistol squat', 3)
   ];
 
   Future<void> _navigateAndDisplayForm(BuildContext context) async {
@@ -59,18 +63,32 @@ class _HomeState extends State<HomePageWidget> {
     if (!context.mounted) return;
 
     setState(() {
+      int randomNumberLimit = 100000;
+      var generatedId = Random().nextInt(randomNumberLimit);
+      while (!idIsValid(generatedId)) {
+        generatedId = Random().nextInt(randomNumberLimit);
+      }
+
+      result.id = generatedId;
       _workoutList.add(result);
     });
-    print(result);
   }
 
-  void _deleteWorkout(String text) {
+  bool idIsValid(int id) {
+    bool hasSame = false;
+
+    for (Workout w in _workoutList) {
+      if (w.id == id) hasSame == true;
+    }
+
+    return !hasSame;
+  }
+
+  void _deleteWorkout(int id) {
     setState(() {
-      _workoutList.removeWhere((w) => w.title.split(" ")[0] == text);
+      _workoutList.removeWhere((w) => w.id == id);
     });
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +128,8 @@ class _HomeState extends State<HomePageWidget> {
     );
   }
 
-  Column makeList(List<Workout> list, BuildContext context, Function deleteCallback) {
+  Column makeList(
+      List<Workout> list, BuildContext context, Function deleteCallback) {
     List<Widget> wl = [];
     for (final w in list) {
       wl.add(WorkoutWidget(w, context, deleteCallback));
@@ -133,7 +152,8 @@ class WorkoutElement extends StatelessWidget {
   }
 }
 
-Widget WorkoutWidget(Workout workout, BuildContext context, Function deleteCallback) {
+Widget WorkoutWidget(
+    Workout workout, BuildContext context, Function deleteCallback) {
   Future<void> _navigateAndManage(BuildContext context, Workout workout) async {
     final shit = await Navigator.push(
         context,
@@ -146,18 +166,19 @@ Widget WorkoutWidget(Workout workout, BuildContext context, Function deleteCallb
   return Card(
       child: ListTile(
     onTap: () async {
-      final shit = await Navigator.push(
+      final selectedAction = await Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => DetailWorkout(workout: workout)));
-      //print(shit);
-      print("fuck");
-      String output = shit.toString();
-      var splitt = output.split(" ");
-      if (splitt[0] == "delete") {
-        print("deu delete!");
 
-        deleteCallback(splitt[1]);
+      String output = selectedAction.toString();
+
+      List<String> outputSplitted = output.split(" ");
+      String action = outputSplitted[0];
+      int workoutId = int.parse(outputSplitted[1]);
+
+      if (action == "delete") {
+        deleteCallback(workoutId);
       }
     },
     leading: const FlutterLogo(size: 56.0),

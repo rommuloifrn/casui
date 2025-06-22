@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:casui/models/workout.dart';
 import 'package:flutter/material.dart';
 
