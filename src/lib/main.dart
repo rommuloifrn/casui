@@ -193,7 +193,7 @@ Widget WorkoutWidget(Workout workout, BuildContext context,
 
           switch (action) {
             case "delete":
-              deleteCallback(workout);
+              deleteCallback(workout.id);
 
             case "edit":
               String novoTitulo = workoutRetornado.title;

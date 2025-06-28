@@ -57,16 +57,6 @@ class WorkoutFormState extends State<WorkoutForm> {
     _titleController.text = _currentWorkout.title;
     _circuitsController.text = _currentWorkout.circuits.toString();
     _descriptionController.text = _currentWorkout.description;
-
-    _titleController.addListener(() {
-      final String text = _titleController.text;
-      _titleController.value = _titleController.value.copyWith(
-        text: text,
-        selection:
-            TextSelection(baseOffset: text.length, extentOffset: text.length),
-        composing: TextRange.empty,
-      );
-    });
   }
 
   @override
