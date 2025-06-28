@@ -1,3 +1,8 @@
+import 'dart:math';
+
+import 'package:casui/add_workout.dart';
+import 'package:casui/detail_workout.dart';
+import 'package:casui/models/workout.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -12,27 +17,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      darkTheme: ThemeData.dark(),
+      darkTheme: ThemeData
+          .dark(), //https://medium.com/@amazing_gs/complete-flutter-guide-how-to-implement-dark-mode-dynamic-theming-and-theme-switching-ddabaef48d5a
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white12),
         useMaterial3: true,
       ),
-      home: const HomePageWidget(title: 'casui'),
+      home: const HomePageWidget(title: ''),
     );
   }
 }
@@ -56,16 +47,55 @@ class HomePageWidget extends StatefulWidget {
 }
 
 class _HomeState extends State<HomePageWidget> {
-  int _counter = 0;
+  final List<Workout> _workoutList = [
+    Workout.withId(123123, 'Arms n´back inhouse', DateTime(2004),
+        'Braços, sem muito equipamento.', 3),
+    Workout.withId(
+        121212, 'Park arms', DateTime(2004), 'Braços, em um parque.', 3),
+    Workout.withId(232323, 'Ultimate Leg Crusher', DateTime(2004),
+        'Um treino desenhado ao redor do pistol squat', 3)
+  ];
 
-  void _incrementCounter() {
+  Future<void> _navigateAndDisplayForm(BuildContext context) async {
+    final result = await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const AddWorkout()));
+
+    if (!context.mounted) return;
+
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      int randomNumberLimit = 100000;
+      var generatedId = Random().nextInt(randomNumberLimit);
+      while (!idIsValid(generatedId)) {
+        generatedId = Random().nextInt(randomNumberLimit);
+      }
+
+      result.id = generatedId;
+      _workoutList.add(result);
+    });
+  }
+
+  bool idIsValid(int id) {
+    bool hasSame = false;
+
+    for (Workout w in _workoutList) {
+      if (w.id == id) hasSame == true;
+    }
+
+    return !hasSame;
+  }
+
+  void _deleteWorkout(int id) {
+    setState(() {
+      _workoutList.removeWhere((w) => w.id == id);
+    });
+  }
+
+  void _updateWorkout(int id, String title, String description, int circuits) {
+    setState(() {
+      Workout workout = _workoutList.firstWhere((w) => w.id == id);
+      workout.title = title;
+      workout.description = description;
+      workout.circuits = circuits;
     });
   }
 
@@ -73,10 +103,6 @@ class _HomeState extends State<HomePageWidget> {
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
         // TRY THIS: Try changing the color here to a specific color (to
@@ -87,41 +113,99 @@ class _HomeState extends State<HomePageWidget> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: const Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+      body: Padding(
+        padding: const EdgeInsets.all(8),
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
           // Column has various properties to control how it sizes itself and
           // how it positions its children. Here we use mainAxisAlignment to
           // center the children vertically; the main axis here is the vertical
           // axis because Columns are vertical (the cross axis would be
           // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
+          //mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            // const Text(
-            //   'You have pushed the button this many times:',
-            // ),
-            // Text(
-            //   '$_counter',
-            //   style: Theme.of(context).textTheme.headlineMedium,
-            // ),
-            Text('Aqui vai haver a lista de treinos')
+            const Text(
+              'My circuits',
+              style: TextStyle(fontSize: 20),
+            ),
+            //WorkoutElement(),
+            makeList(_workoutList, context, _deleteWorkout, _updateWorkout)
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+
+      floatingActionButton: FloatingActionButton.extended(
+        key: const Key('opa amorrr'),
+        onPressed: () => {_navigateAndDisplayForm(context)},
         tooltip: 'Increment',
-        child: const Icon(Icons.add),
+        label: const Text('New'),
+        icon: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+
+  Column makeList(List<Workout> list, BuildContext context,
+      Function deleteCallback, Function updateCallback) {
+    List<Widget> wl = [];
+    for (final w in list) {
+      wl.add(WorkoutWidget(w, context, deleteCallback, updateCallback));
+    }
+
+    return Column(
+      children: wl,
+    );
+  }
+}
+
+class WorkoutElement extends StatelessWidget {
+  Widget build(BuildContext context) {
+    return FloatingActionButton.extended(
+      onPressed: () => {},
+      key: const Key('Ayyy amo'),
+      label: const Text('Eu sou um treino'),
+      backgroundColor: Colors.teal[600],
+    );
+  }
+}
+
+Widget WorkoutWidget(Workout workout, BuildContext context,
+    Function deleteCallback, Function updateCallback) {
+  Future<void> _navigateAndManage(BuildContext context, Workout workout) async {
+    final shit = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => DetailWorkout(workout: workout)));
+
+    if (!context.mounted) return;
+  }
+
+  return Card(
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      child: ListTile(
+        onTap: () async {
+          final output = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => DetailWorkout(workout: workout)));
+
+          String action = output[0];
+          Workout workoutRetornado = output[1];
+
+          switch (action) {
+            case "delete":
+              deleteCallback(workout);
+
+            case "edit":
+              String novoTitulo = workoutRetornado.title;
+              String novaDescription = workoutRetornado.description;
+              int novoCircuits = workoutRetornado.circuits;
+              updateCallback(workoutRetornado.id, novoTitulo, novaDescription,
+                  novoCircuits);
+            default:
+          }
+        },
+        leading: const FlutterLogo(size: 56.0),
+        title: Text(workout.title),
+        subtitle: Text(workout.description),
+      ));
 }
