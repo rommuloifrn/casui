@@ -1,13 +1,36 @@
+import 'package:casui/edit_workout.dart';
 import 'package:casui/models/workout.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 enum WorkoutOptions { delete, edit, share }
 
-class DetailWorkout extends StatelessWidget {
+class DetailWorkout extends StatefulWidget {
   const DetailWorkout({super.key, required this.workout});
 
   final Workout workout;
+
+  @override
+  State<StatefulWidget> createState() => _DetailWorkoutState();
+}
+
+class _DetailWorkoutState extends State<DetailWorkout> {
+  Workout get workout => widget.workout;
+
+  Future<void> _navigateToEdition(BuildContext context) async {
+    final circuit = await Navigator.push(context,
+        MaterialPageRoute(builder: (context) => EditWorkout(workout: workout)));
+
+    if (!context.mounted) return;
+
+    setState(() {
+      workout.title = circuit.title;
+      workout.description = circuit.description;
+      workout.circuits = circuit.circuits;
+    });
+
+    Navigator.pop(context, ['edit', workout]);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,12 +52,11 @@ class DetailWorkout extends StatelessWidget {
                   onSelected: (WorkoutOptions o) {
                     switch (o) {
                       case WorkoutOptions.delete:
-                        print("Delte!");
-                        Navigator.pop(context, "delete ${workout.id}");
+                        Navigator.pop(context, ["delete", workout]);
                         break;
 
-                      case WorkoutOptions.share:
-                        print("share!");
+                      case WorkoutOptions.edit:
+                        _navigateToEdition(context);
                         break;
 
                       default:
@@ -57,8 +79,11 @@ class DetailWorkout extends StatelessWidget {
           ),
           Text("${workout.circuits} circuits"),
           Text(
+            workout.description,
+          ),
+          Text(
               "Created in ${DateFormat("MMMM, d yyyy").format(workout.created)}"),
-          Text("Last exec: 20/04 (8 days ago)")
+          const Text("Last exec: 20/04 (8 days ago)")
         ]),
       ),
       floatingActionButton: FloatingActionButton.extended(

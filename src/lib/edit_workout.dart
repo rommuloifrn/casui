@@ -1,33 +1,36 @@
 import 'package:casui/models/workout.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const AddWorkout());
-}
+class EditWorkout extends StatelessWidget {
+  const EditWorkout({super.key, required this.workout});
 
-class AddWorkout extends StatelessWidget {
-  const AddWorkout({super.key});
+  final Workout workout;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
-        title: const Text("casui"),
       ),
-      body: const WorkoutForm(),
+      body: Column(
+        children: [const Text("Edit workout"), WorkoutForm(workout: workout)],
+      ),
     );
   }
 }
 
 class WorkoutForm extends StatefulWidget {
-  const WorkoutForm({super.key});
+  final Workout workout;
+
+  const WorkoutForm({super.key, required this.workout});
 
   @override
   State<StatefulWidget> createState() => WorkoutFormState();
 }
 
 class WorkoutFormState extends State<WorkoutForm> {
+  Workout get _currentWorkout => widget.workout;
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
@@ -43,8 +46,6 @@ class WorkoutFormState extends State<WorkoutForm> {
       var circuit =
           Workout(title, DateTime.now(), description, int.parse(circuits));
 
-      print('titulo: $title, desc: $description, n circuits: $circuits');
-      // Aqui você faria a lógica de envio dos dados, por exemplo, para uma API.
       Navigator.pop(context, circuit);
     }
   }
@@ -52,8 +53,13 @@ class WorkoutFormState extends State<WorkoutForm> {
   @override
   void initState() {
     super.initState();
+
+    _titleController.text = _currentWorkout.title;
+    _circuitsController.text = _currentWorkout.circuits.toString();
+    _descriptionController.text = _currentWorkout.description;
+
     _titleController.addListener(() {
-      final String text = _titleController.text.toLowerCase();
+      final String text = _titleController.text;
       _titleController.value = _titleController.value.copyWith(
         text: text,
         selection:
@@ -69,7 +75,6 @@ class WorkoutFormState extends State<WorkoutForm> {
       key: _formKey,
       child: Column(
         children: [
-          Text(_titleController.text),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(

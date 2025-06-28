@@ -90,6 +90,15 @@ class _HomeState extends State<HomePageWidget> {
     });
   }
 
+  void _updateWorkout(int id, String title, String description, int circuits) {
+    setState(() {
+      Workout workout = _workoutList.firstWhere((w) => w.id == id);
+      workout.title = title;
+      workout.description = description;
+      workout.circuits = circuits;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -120,7 +129,7 @@ class _HomeState extends State<HomePageWidget> {
               style: TextStyle(fontSize: 20),
             ),
             //WorkoutElement(),
-            makeList(_workoutList, context, _deleteWorkout)
+            makeList(_workoutList, context, _deleteWorkout, _updateWorkout)
           ],
         ),
       ),
@@ -135,11 +144,11 @@ class _HomeState extends State<HomePageWidget> {
     );
   }
 
-  Column makeList(
-      List<Workout> list, BuildContext context, Function deleteCallback) {
+  Column makeList(List<Workout> list, BuildContext context,
+      Function deleteCallback, Function updateCallback) {
     List<Widget> wl = [];
     for (final w in list) {
-      wl.add(WorkoutWidget(w, context, deleteCallback));
+      wl.add(WorkoutWidget(w, context, deleteCallback, updateCallback));
     }
 
     return Column(
@@ -159,8 +168,8 @@ class WorkoutElement extends StatelessWidget {
   }
 }
 
-Widget WorkoutWidget(
-    Workout workout, BuildContext context, Function deleteCallback) {
+Widget WorkoutWidget(Workout workout, BuildContext context,
+    Function deleteCallback, Function updateCallback) {
   Future<void> _navigateAndManage(BuildContext context, Workout workout) async {
     final shit = await Navigator.push(
         context,
@@ -174,19 +183,25 @@ Widget WorkoutWidget(
       margin: const EdgeInsets.symmetric(vertical: 4),
       child: ListTile(
         onTap: () async {
-          final selectedAction = await Navigator.push(
+          final output = await Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => DetailWorkout(workout: workout)));
 
-          String output = selectedAction.toString();
+          String action = output[0];
+          Workout workoutRetornado = output[1];
 
-          List<String> outputSplitted = output.split(" ");
-          String action = outputSplitted[0];
-          int workoutId = int.parse(outputSplitted[1]);
+          switch (action) {
+            case "delete":
+              deleteCallback(workout);
 
-          if (action == "delete") {
-            deleteCallback(workoutId);
+            case "edit":
+              String novoTitulo = workoutRetornado.title;
+              String novaDescription = workoutRetornado.description;
+              int novoCircuits = workoutRetornado.circuits;
+              updateCallback(workoutRetornado.id, novoTitulo, novaDescription,
+                  novoCircuits);
+            default:
           }
         },
         leading: const FlutterLogo(size: 56.0),
