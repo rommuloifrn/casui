@@ -1,4 +1,4 @@
-import 'package:casui/edit_workout.dart';
+import 'package:casui/screens/edit_workout/edit_workout.dart';
 import 'package:casui/models/workout.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';

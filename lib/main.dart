@@ -1,11 +1,19 @@
+import 'dart:io';
 import 'dart:math';
 
-import 'package:casui/add_workout.dart';
-import 'package:casui/detail_workout.dart';
 import 'package:casui/models/workout.dart';
+import 'package:casui/repository/workout_repo.dart';
+import 'package:casui/screens/add_workout/add_workout.dart';
+import 'package:casui/screens/detail_workout/detail_workout.dart';
 import 'package:flutter/material.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-void main() {
+Future main() async {
+  if (Platform.isWindows || Platform.isLinux) {
+    // Initialize FFI
+    sqfliteFfiInit();
+  }
+  databaseFactory = databaseFactoryFfi;
   runApp(const MyApp());
 }
 
@@ -48,12 +56,12 @@ class HomePageWidget extends StatefulWidget {
 
 class _HomeState extends State<HomePageWidget> {
   final List<Workout> _workoutList = [
-    Workout.withId(123123, 'Arms n´back inhouse', DateTime(2004),
-        'Braços, sem muito equipamento.', 3),
-    Workout.withId(
-        121212, 'Park arms', DateTime(2004), 'Braços, em um parque.', 3),
-    Workout.withId(232323, 'Ultimate Leg Crusher', DateTime(2004),
-        'Um treino desenhado ao redor do pistol squat', 3)
+    // Workout.withId(123123, 'Arms n´back inhouse', DateTime(2004),
+    //     'Braços, sem muito equipamento.', 3),
+    // Workout.withId(
+    //     121212, 'Park arms', DateTime(2004), 'Braços, em um parque.', 3),
+    // Workout.withId(232323, 'Ultimate Leg Crusher', DateTime(2004),
+    //     'Um treino desenhado ao redor do pistol squat', 3)
   ];
 
   Future<void> _navigateAndDisplayForm(BuildContext context) async {
@@ -61,6 +69,8 @@ class _HomeState extends State<HomePageWidget> {
         context, MaterialPageRoute(builder: (context) => const AddWorkout()));
 
     if (!context.mounted) return;
+
+    var wks = await retrieveWorkouts();
 
     setState(() {
       int randomNumberLimit = 100000;
@@ -71,6 +81,11 @@ class _HomeState extends State<HomePageWidget> {
 
       result.id = generatedId;
       _workoutList.add(result);
+
+      _workoutList.clear();
+      wks.forEach((w)=>
+        _workoutList.add(w)
+      );
     });
   }
 
@@ -99,8 +114,17 @@ class _HomeState extends State<HomePageWidget> {
     });
   }
 
+  Future updateList() async {
+    var wks = await retrieveWorkouts();
+    setState(() {
+      _workoutList.clear();
+      wks.forEach((wk)=>_workoutList.add(wk));
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    updateList();
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     return Scaffold(
@@ -136,7 +160,9 @@ class _HomeState extends State<HomePageWidget> {
 
       floatingActionButton: FloatingActionButton.extended(
         key: const Key('opa amorrr'),
-        onPressed: () => {_navigateAndDisplayForm(context)},
+        onPressed: () => {
+          _navigateAndDisplayForm(context)
+        },
         tooltip: 'Increment',
         label: const Text('New'),
         icon: const Icon(Icons.add),
@@ -193,9 +219,11 @@ Widget WorkoutWidget(Workout workout, BuildContext context,
 
           switch (action) {
             case "delete":
-              deleteCallback(workout.id);
+              await deleteWorkout(workout.id);
 
             case "edit":
+              updateWorkout(workoutRetornado);
+              
               String novoTitulo = workoutRetornado.title;
               String novaDescription = workoutRetornado.description;
               int novoCircuits = workoutRetornado.circuits;

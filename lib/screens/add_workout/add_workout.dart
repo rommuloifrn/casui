@@ -1,4 +1,5 @@
 import 'package:casui/models/workout.dart';
+import 'package:casui/repository/workout_repo.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -43,8 +44,11 @@ class WorkoutFormState extends State<WorkoutForm> {
       var circuit =
           Workout(title, DateTime.now(), description, int.parse(circuits));
 
+      insertWorkout(circuit);
+
       print('titulo: $title, desc: $description, n circuits: $circuits');
       // Aqui você faria a lógica de envio dos dados, por exemplo, para uma API.
+      retrieveWorkouts();
       Navigator.pop(context, circuit);
     }
   }
