@@ -1,5 +1,7 @@
+import 'package:casui/models/movement.dart';
 import 'package:casui/models/workout.dart';
 import 'package:casui/repository/workout_repo.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -34,6 +36,8 @@ class WorkoutFormState extends State<WorkoutForm> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _circuitsController = TextEditingController();
 
+  final _movementList = <Movement>[];
+
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
       // Se o formulário for válido, podemos acessar os valores dos campos
@@ -67,8 +71,37 @@ class WorkoutFormState extends State<WorkoutForm> {
     });
   }
 
+  Future<List<Movement>> getMovements() async {
+    final response = await Dio().get('http://localhost:8080/movement');
+
+    var movesJson = response.data;
+
+    var moves = [
+      for (final {
+            'id': id as String,
+            'title': title as String,
+            'description': description as String,
+            'isometric': isometric as bool
+          } in movesJson)
+        Movement(id, title, description, isometric),
+    ];
+
+    return moves;
+  }
+
+  Future updateMovements() async {
+    var moves = await getMovements();
+
+    setState(() {
+      _movementList.clear();
+      moves.forEach((m) => _movementList.add(m));
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    updateMovements();
+
     return Form(
       key: _formKey,
       child: Column(
@@ -118,6 +151,12 @@ class WorkoutFormState extends State<WorkoutForm> {
             ),
           ),
           Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Column(
+              children: movementsToWidgets(_movementList),
+            ),
+          ),
+          Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: ElevatedButton(
               onPressed: () {
@@ -130,4 +169,19 @@ class WorkoutFormState extends State<WorkoutForm> {
       ),
     );
   }
+}
+
+List<Widget> movementsToWidgets(List<Movement> moves) {
+  List<Widget> wds = [];
+
+  moves.forEach((m) => wds.add(Card(
+        child: ListTile(
+          title: Text(m.title),
+          subtitle: Text(m.description),
+          leading: const Icon(Icons.sports_gymnastics),
+          onTap: ()=>{},
+        ),
+      )));
+
+  return wds;
 }

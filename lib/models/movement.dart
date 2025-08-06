@@ -1,6 +1,13 @@
 class Movement {
+  String id;
   String title;
-  bool isIsometric;
+  String description;
+  bool isometric;
+  
+  Movement(this.id, this.title, this.description, this.isometric);
 
-  Movement(this.title, this.isIsometric);
+  @override
+  String toString() {
+    return 'Movement{id: $id, name: $title, isometric: $isometric}';
+  }
 }

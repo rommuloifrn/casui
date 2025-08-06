@@ -81,7 +81,5 @@ Future<List<Workout>> retrieveWorkouts() async {
       Workout.withId(id, title, DateTime.parse(created), description, circuits),
   ];
 
-  print(result);
-
   return result;
 }

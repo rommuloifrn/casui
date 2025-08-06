@@ -83,9 +83,7 @@ class _HomeState extends State<HomePageWidget> {
       _workoutList.add(result);
 
       _workoutList.clear();
-      wks.forEach((w)=>
-        _workoutList.add(w)
-      );
+      wks.forEach((w) => _workoutList.add(w));
     });
   }
 
@@ -118,7 +116,7 @@ class _HomeState extends State<HomePageWidget> {
     var wks = await retrieveWorkouts();
     setState(() {
       _workoutList.clear();
-      wks.forEach((wk)=>_workoutList.add(wk));
+      wks.forEach((wk) => _workoutList.add(wk));
     });
   }
 
@@ -160,9 +158,7 @@ class _HomeState extends State<HomePageWidget> {
 
       floatingActionButton: FloatingActionButton.extended(
         key: const Key('opa amorrr'),
-        onPressed: () => {
-          _navigateAndDisplayForm(context)
-        },
+        onPressed: () => {_navigateAndDisplayForm(context)},
         tooltip: 'Increment',
         label: const Text('New'),
         icon: const Icon(Icons.add),
@@ -223,7 +219,7 @@ Widget WorkoutWidget(Workout workout, BuildContext context,
 
             case "edit":
               updateWorkout(workoutRetornado);
-              
+
               String novoTitulo = workoutRetornado.title;
               String novaDescription = workoutRetornado.description;
               int novoCircuits = workoutRetornado.circuits;
@@ -232,7 +228,6 @@ Widget WorkoutWidget(Workout workout, BuildContext context,
             default:
           }
         },
-        leading: const FlutterLogo(size: 56.0),
         title: Text(workout.title),
         subtitle: Text(workout.description),
       ));
